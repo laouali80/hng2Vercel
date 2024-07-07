@@ -7,7 +7,7 @@ from django.http import JsonResponse
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
-    userId = serializers.UUIDField(source='userId')
+    # userId = serializers.UUIDField(source='userId')
 
     class Meta:
         model = User
