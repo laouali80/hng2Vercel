@@ -30,7 +30,7 @@ class User(AbstractUser):
 class Organisation(models.Model):
     orgId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=64, blank=False, null=False, )
-    description = models.CharField(max_length=64, blank=True, null=True)
+    description = models.CharField(max_length=64, null=True)
 
     def __str__(self):
         return self.name
