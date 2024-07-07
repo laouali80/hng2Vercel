@@ -4,8 +4,8 @@ from django.test import TestCase
 
 
 # {
-# "first_name": "string",
-# "last_name": "string1",
+# "firstName": "string",
+# "lastName": "string1",
 # "email": "string@gmail.com",
 # "password": "string",
 # "phone": "34567"

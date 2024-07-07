@@ -42,6 +42,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                     },
                 ]
             }, status= 422)
+        return value
     
 
     def validate_email(self, value):
@@ -54,6 +55,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                     },
                 ]
             }, status= 422)
+        return value
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -89,6 +91,7 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
                     },
                 ]
             }, status= 422)
+        return value
 
     def create(self, validated_data):
         name = f"{validated_data['name'].title()}'s Organisation"
