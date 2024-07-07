@@ -139,75 +139,13 @@ def get_user_record(request, id:str = None):
                     "message": "User record found",
                     "data": serializer.data
                 }, status=status.HTTP_200_OK)
-        elif user.organisations.filter(pk__in=target_user.organizations.values_list('pk', flat=True)).exists():
+        elif user.organisations.filter(pk__in=target_user.organisations.values_list('pk', flat=True)).exists():
             return Response({
                     "status": "success same organnisation"
                 }, status=status.HTTP_200_OK)
             
     else:
         return Response({
-            "status": "Method not allowed",
-            "message": "This request method is not allow.",
-            "statusCode": 405
-        }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-@api_view(['GET'])
-def get_organisation(request, orgId:str = None):
-    """Get an organisation with a giving orgId"""
-
-    if request.method == 'GET':
-        if orgId:
-            try:
-                organisation = Organisation.objects.get(pk=orgId)
-            except UnboundLocalError or ValueError:
-                return Response("Error 404!! Not found.", status=status.HTTP_400_BAD_REQUEST)
-            except Organisation.DoesNotExist:
-                return Response("Error 404!! Not found.", status=status.HTTP_404_NOT_FOUND)
-            
-            serializer = OrganisationSerializer(organisation, many=False)
-
-            return Response({
-                    "status": "success",
-                    "message": "<message>",
-                    "data": serializer.data
-                }, status=status.HTTP_200_OK)
-        else:
-
-            organisations = Organisation.objects.all()
-            serializer = UserSerializer(organisations, many=True)
-            return Response({
-                    "status": "success",
-                    "message": "<message>",
-                    "data": {
-                    "organisations": serializer.data
-                    }
-                }, status=status.HTTP_200_OK)
-            
-    elif request.method == 'POST':
-        try:
-            serializer = CreateOrganisationSerializer(data=request.data)
-        except KeyError as e:
-            print(e)
-
-        if serializer.is_valid():
-            organisation = serializer.save()
-            organisation_data = UserSerializer(organisation).data
-
-            return Response({
-                    "status": "success",
-                    "message": "Organisation created successfully",
-                    "data": organisation_data
-                    }, status=status.HTTP_201_CREATED)
-        
-        return Response({
-            "status": "Bad Request",
-            "message": "Client error",
-            "statusCode": 400
-        }, status=status.HTTP_400_BAD_REQUEST)
-
- 
-    else:
-        Response({
             "status": "Method not allowed",
             "message": "This request method is not allow.",
             "statusCode": 405
@@ -239,12 +177,12 @@ def get_or_create_organisations(request):
             "name": request.data.get('name'),
             "description": request.data.get('description')
         }
-        new_org = CreateOrganisationSerializer(data=new_org_data)
+        new_org_serializer = CreateOrganisationSerializer(data=new_org_data)
 
-        if new_org.is_valid():
-            new_org.save()
+        if new_org_serializer.is_valid():
+            new_org = new_org_serializer.save()  # Save and get the actual Organisation instance
 
-            request.user.organisations.add(new_org)
+            request.user.organisations.add(new_org)  # Add the Organisation instance to the user's organisations
 
             response_data = {
                 "status": "success",
@@ -260,6 +198,71 @@ def get_or_create_organisations(request):
             "statusCode": 400
         }, status=status.HTTP_400_BAD_REQUEST)
     
+
+
+@api_view(['GET'])
+def get_organisation(request, orgId:str = None):
+    """Get an organisation with a giving orgId"""
+
+    if request.method == 'GET':
+        if orgId:
+            try:
+                organisation = Organisation.objects.get(pk=orgId)
+            except UnboundLocalError or ValueError:
+                return Response("Error 404!! Not found.", status=status.HTTP_400_BAD_REQUEST)
+            except Organisation.DoesNotExist:
+                return Response("Error 404!! Not found.", status=status.HTTP_404_NOT_FOUND)
+            
+            serializer = OrganisationSerializer(organisation, many=False)
+
+            return Response({
+                    "status": "success",
+                    "message": "Organisation Found",
+                    "data": serializer.data
+                }, status=status.HTTP_200_OK)
+        else:
+
+            organisations = Organisation.objects.all()
+            serializer = UserSerializer(organisations, many=True)
+            return Response({
+                    "status": "success",
+                    "message": "<message>",
+                    "data": {
+                    "organisations": serializer.data
+                    }
+                }, status=status.HTTP_200_OK)
+            
+    elif request.method == 'POST':
+        try:
+            serializer = CreateOrganisationSerializer(data=request.data)
+        except KeyError as e:
+            print(e)
+
+        if serializer.is_valid():
+            organisation = serializer.save()
+            organisation_data = OrganisationSerializer(organisation).data
+
+            return Response({
+                    "status": "success",
+                    "message": "Organisation created successfully",
+                    "data": organisation_data
+                    }, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            "status": "Bad Request",
+            "message": "Client error",
+            "statusCode": 400
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+ 
+    else:
+        Response({
+            "status": "Method not allowed",
+            "message": "This request method is not allow.",
+            "statusCode": 405
+        }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
