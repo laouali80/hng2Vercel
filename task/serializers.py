@@ -20,7 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_firstName(self, value):
-        if len(value) < 3:
+        if len(value) < 1:
             return JsonResponse({
                     "errors": [
                         {
@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
     
 
-    def validate_lastName(value):
+    def validate_lastName(self, value):
         if len(value) < 1:
             return JsonResponse({
                 "errors": [
@@ -44,7 +44,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             }, status= 422)
     
 
-    def validate_email(value):
+    def validate_email(self, value):
         if len(value) < 1 or '@gmail.com' not in value:
             return JsonResponse({
                 "errors": [
@@ -79,7 +79,7 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
         model = Organisation
         fields = ['name', 'description']
 
-    def validate_name(value):
+    def validate_name(self, value):
         if len(value) < 1:
             return JsonResponse({
                 "errors": [
@@ -100,7 +100,3 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
         return organisation
     
     
-    def validate_name(self, value):
-        if not value:
-            raise serializers.ValidationError("Name is required and cannot be null")
-        return value
