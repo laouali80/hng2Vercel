@@ -1,31 +1,18 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from .users.models import User, Organisation
 from .serializers import UserSerializer, RegisterSerializer, CreateOrganisationSerializer, OrganisationSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.exceptions import ValidationError
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
-@api_view(['GET','POST'])
-@permission_classes([IsAuthenticated])
-def test(request):
-    return Response({
-                "status": "Bad request",
-                "message": "Registration unsuccessful",
-                "statusCode": 200
-            }, status=status.HTTP_200_OK)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def welcome(request):
+    return redirect('register')
 
 @api_view(['GET','POST'])
 @permission_classes([AllowAny])
