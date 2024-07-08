@@ -71,7 +71,15 @@ def register(request):
                     }, status=status.HTTP_400_BAD_REQUEST)
         
         
-        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+       resp = {
+            "errors": [
+                {
+                    "field": list(serializer.errors.keys())[0],
+                    "message": serializer.errors[f"{list(serializer.errors.keys())[0]}"][0]
+                }
+            ]
+        }
+        return Response(resp, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         
     else:
         return Response({

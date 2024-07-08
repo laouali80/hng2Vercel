@@ -19,45 +19,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['firstName', 'lastName', 'email', 'password', 'phone']
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True},
+                        'firstName': {'error_messages': {'blank': 'must not be null.'}},
+                        'lastName': {'error_messages': {'blank': 'must not be null.'}},
+                        'email': {'error_messages': {'blank': 'must be unique and must not be null.'}},
+                        'password': {'error_messages': {'blank': 'must not be null.'}},
+                        }
 
-    def validate_firstName(self, value):
-        if len(value) < 1:
-            return Response({
-                    "errors": [
-                        {
-                        "field": "FirstName",
-                        "message": "name must not be null."
-                        },
-                    ]
-                }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        return value
-    
-
-    def validate_lastName(self, value):
-        if len(value) < 1:
-            return Response({
-                "errors": [
-                    {
-                    "field": "LastName",
-                    "message": "must not be null."
-                    },
-                ]
-            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
-        return value
-    
-
-    def validate_email(self, value):
-        if len(value) < 1:
-            return Response({
-                "errors": [
-                    {
-                    "field": "Email",
-                    "message": "must be unique and not null."
-                    },
-                ]
-            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
-        return value
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -69,7 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
+        
 class OrganisationSerializer(serializers.ModelSerializer):
 
     class Meta:
