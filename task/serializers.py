@@ -24,8 +24,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             return JsonResponse({
                     "errors": [
                         {
-                        "field": "First Name",
-                        "message": "The first name must contain at least 3 letters (e.g: Tim)."
+                        "field": "FirstName",
+                        "message": "name must not be null."
                         },
                     ]
                 }, status= 422)
@@ -37,8 +37,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             return JsonResponse({
                 "errors": [
                     {
-                    "field": "Last Name",
-                    "message": "The last name must contain at least 3 letters (e.g: Jim)."
+                    "field": "LastName",
+                    "message": "must not be null."
                     },
                 ]
             }, status= 422)
@@ -46,12 +46,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 
     def validate_email(self, value):
-        if len(value) < 1 or '@gmail.com' not in value:
+        if len(value) < 1:
             return JsonResponse({
                 "errors": [
                     {
                     "field": "Email",
-                    "message": "Email must be unique and not null."
+                    "message": "must be unique and not null."
                     },
                 ]
             }, status= 422)
@@ -87,7 +87,7 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
                 "errors": [
                     {
                     "field": "Organisation Name",
-                    "message": "The name cannot be null."
+                    "message": "Required and cannot be null"
                     },
                 ]
             }, status= 422)

@@ -132,18 +132,18 @@ def get_user_record(request, id:str = None):
         except User.DoesNotExist:
             return Response("Error 404!! Not found.", status=status.HTTP_404_NOT_FOUND)
         
-        if target_user == user:
-            serializer = UserSerializer(user, many=False)
-            return Response({
-                    "status": "success",
-                    "message": "User record found",
-                    "data": serializer.data
-                }, status=status.HTTP_200_OK)
-        elif user.organisations.filter(pk__in=target_user.organisations.values_list('pk', flat=True)).exists():
-            return Response({
-                    "status": "success same organnisation"
-                }, status=status.HTTP_200_OK)
-            
+         # Check if the user is requesting their own record or a record in their organizations
+        if target_user == user or user.organisations.filter(pk__in=target_user.organisations.values_list('pk', flat=True)).exists():
+            serializer = UserSerializer(target_user, many=False)
+            response_data = {
+                "status": "success",
+                "message": "User record found",
+                "data": serializer.data
+            }
+            return JsonResponse(response_data, status=200)
+        else:
+            return JsonResponse({"status": "error", "message": "You do not have permission to view this user."}, status=403)
+        
     else:
         return Response({
             "status": "Method not allowed",
@@ -180,9 +180,9 @@ def get_or_create_organisations(request):
         new_org_serializer = CreateOrganisationSerializer(data=new_org_data)
 
         if new_org_serializer.is_valid():
-            new_org = new_org_serializer.save()  # Save and get the actual Organisation instance
+            new_org = new_org_serializer.save()  
 
-            request.user.organisations.add(new_org)  # Add the Organisation instance to the user's organisations
+            request.user.organisations.add(new_org)
 
             response_data = {
                 "status": "success",
