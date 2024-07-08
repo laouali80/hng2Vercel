@@ -53,8 +53,8 @@ def register(request):
             
             if orga_serializer.is_valid():
                 save_org = orga_serializer.save()
-
-                request.user.organisations.add(save_org)
+                user = User.objects.get(pk=user_data["userId"])
+                user.organisations.add(save_org)
 
                 return Response({
                     "status": "success",
