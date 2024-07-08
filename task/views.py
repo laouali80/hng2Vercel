@@ -52,7 +52,7 @@ def register(request):
             orga_serializer = CreateOrganisationSerializer(data=orga_creation_data)
             
             if orga_serializer.is_valid():
-                orga_serializer.save()
+                save_org = orga_serializer.save()
 
                 return Response({
                     "status": "success",
@@ -85,8 +85,8 @@ def register(request):
         return Response({
                     "status": "Method not allowed",
                     "message": "This request method is not allow.",
-                    "statusCode": 405
-                }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                    "statusCode": 400
+                }, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET','POST'])
 @permission_classes([AllowAny])
