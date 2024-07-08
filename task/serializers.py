@@ -2,7 +2,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .users.models import Organisation
-from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
 from django.db import IntegrityError
 
 User = get_user_model()
@@ -22,40 +23,40 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_firstName(self, value):
         if len(value) < 1:
-            return JsonResponse({
+            return Response({
                     "errors": [
                         {
                         "field": "FirstName",
                         "message": "name must not be null."
                         },
                     ]
-                }, status= 422)
+                }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         return value
     
 
     def validate_lastName(self, value):
         if len(value) < 1:
-            return JsonResponse({
+            return Response({
                 "errors": [
                     {
                     "field": "LastName",
                     "message": "must not be null."
                     },
                 ]
-            }, status= 422)
+            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
         return value
     
 
     def validate_email(self, value):
         if len(value) < 1:
-            return JsonResponse({
+            return Response({
                 "errors": [
                     {
                     "field": "Email",
                     "message": "must be unique and not null."
                     },
                 ]
-            }, status= 422)
+            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
         return value
 
     def create(self, validated_data):
@@ -84,14 +85,14 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if len(value) < 1:
-            return JsonResponse({
+            return Response({
                 "errors": [
                     {
                     "field": "Organisation Name",
                     "message": "Required and cannot be null"
                     },
                 ]
-            }, status= 422)
+            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
         return value
 
     def create(self, validated_data):
