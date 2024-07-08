@@ -84,16 +84,27 @@ WSGI_APPLICATION = 'task2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv("ENGINE"),
-        'HOST': os.getenv("HOST"),
-        'NAME': os.getenv("NAME"),
-        'USER': os.getenv("USER"),
-        'PASSWORD': os.getenv("PASSWORD"),
-        'PORT': os.getenv("PORT"),
+
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'DEVELOPMENT')
+
+if ENVIRONMENT == 'DEVELOPMENT':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv("ENGINE"),
+            'HOST': os.getenv("HOST"),
+            'NAME': os.getenv("NAME"),
+            'USER': os.getenv("USER"),
+            'PASSWORD': os.getenv("PASSWORD"),
+            'PORT': os.getenv("PORT"),
+        }
+    }
 
 
 # Password validation
