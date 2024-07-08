@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .users.models import Organisation
 from django.http import JsonResponse
+from django.db import IntegrityError
 
 User = get_user_model()
 
@@ -94,12 +95,16 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        name = f"{validated_data['name'].title()}'s Organisation"
-        organisation = Organisation.objects.create(
-            name=name,
-            description=validated_data['description']
-        )
-        organisation.save()
+        try:
+            name = f"{validated_data['name'].title()}'s Organisation"
+            organisation = Organisation.objects.create(
+                name=name,
+                description=validated_data['description']
+            )
+            organisation.save()
+        except IntegrityError as e:
+            raise serializers.ValidationError(str(e))
+        
         return organisation
     
     

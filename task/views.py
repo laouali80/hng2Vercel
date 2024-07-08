@@ -21,9 +21,6 @@ load_dotenv()
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def test(request):
-    # return JsonResponse({
-    #     "rseponse": "success"
-    # }, status=200)
     return Response({
                 "status": "Bad request",
                 "message": "Registration unsuccessful",
@@ -36,9 +33,11 @@ def register(request):
     """Registers a users and creates a default organisation."""
     
     if request.method == "POST":
+        
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
+            
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
@@ -51,9 +50,10 @@ def register(request):
                 "description": ''
             }
             orga_serializer = CreateOrganisationSerializer(data=orga_creation_data)
-
+            
             if orga_serializer.is_valid():
                 orga_serializer.save()
+
                 return Response({
                     "status": "success",
                     "message": "Registration successful",
@@ -140,9 +140,9 @@ def get_user_record(request, id:str = None):
                 "message": "User record found",
                 "data": serializer.data
             }
-            return JsonResponse(response_data, status=200)
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({"status": "error", "message": "You do not have permission to view this user."}, status=403)
+            return Response({"status": "error", "message": "You do not have permission to view this user."}, status=status.HTTP_403_FORBIDDEN)
         
     else:
         return Response({
