@@ -50,18 +50,9 @@ class CreateOrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = ['name', 'description']
-
-    def validate_name(self, value):
-        if len(value) < 1:
-            return Response({
-                "errors": [
-                    {
-                    "field": "Organisation Name",
-                    "message": "Required and cannot be null"
-                    },
-                ]
-            }, status= status.HTTP_422_UNPROCESSABLE_ENTITY)
-        return value
+        extra_kwargs = {
+                        'name': {'error_messages': {'blank': 'Required and cannot be null.'}},
+                        }
 
     def create(self, validated_data):
         try:
