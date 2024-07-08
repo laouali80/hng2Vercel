@@ -54,6 +54,8 @@ def register(request):
             if orga_serializer.is_valid():
                 save_org = orga_serializer.save()
 
+                request.user.organisations.add(save_org)
+
                 return Response({
                     "status": "success",
                     "message": "Registration successful",
@@ -241,11 +243,8 @@ def get_organisation(request, orgId:str = None):
                 }, status=status.HTTP_200_OK)
             
     elif request.method == 'POST':
-        try:
-            serializer = CreateOrganisationSerializer(data=request.data)
-        except KeyError as e:
-            print(e)
-
+        serializer = CreateOrganisationSerializer(data=request.data)
+        
         if serializer.is_valid():
             organisation = serializer.save()
             organisation_data = OrganisationSerializer(organisation).data
